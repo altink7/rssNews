@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:defaultValue="@string/settings_news_url_default"
+        android:key="@string/settings_news_url_key"
+        android:summary="@string/settings_news_url_summary"
+        android:title="@string/settings_news_url_title"
+        />
+    <CheckBoxPreference
+        android:defaultValue="@bool/settings_image_display_default"
+        android:key="@string/settings_image_display_key"
+        android:summaryOff="@string/settings_image_display_summary_off"
+        android:summaryOn="@string/settings_image_display_summary_on"
+        android:title="@string/settings_image_display_title"
+        />
+    <CheckBoxPreference
+        android:defaultValue="@bool/settings_image_cache_default"
+        android:key="@string/settings_image_cache_key"
+        android:summaryOff="@string/settings_image_cache_summary_off"
+        android:summaryOn="@string/settings_image_cache_summary_on"
+        android:title="@string/settings_image_cache_title"
+        />
+</PreferenceScreen>

@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">NewsClassic</string>
+    <string name="reload">Reload</string>
+    <string name="an_error_occurred_please_try_again_later">An error occurred. Please try again later.</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="author">Author</string>
+    <string name="image_url">Image URL</string>
+    <string name="keywords">Keywords</string>
+    <string name="publication_date">Publication Date</string>
+    <string name="show_full_article">Show full article</string>
+    <string name="caption_settings">Settings</string>
+    <string name="news_item_image_content_description">News Item Image</string>
+    <string name="settings_news_url_default">https://www.engadget.com/rss.xml</string>
+    <string name="settings_news_url_key" translatable="false">news_url</string>
+    <string name="settings_news_url_summary">Change the URL of your news feed.</string>
+    <string name="settings_news_url_title">News Feed URL</string>
+    <string name="settings_image_display_key" translatable="false">image_display</string>
+    <string name="settings_image_display_summary_off">Images will not be displayed.</string>
+    <string name="settings_image_display_summary_on">Images will be displayed.</string>
+    <string name="settings_image_display_title">Display Images</string>
+    <string name="settings_image_cache_key" translatable="false">image_cache</string>
+    <string name="settings_image_cache_summary_off">Images will not be downloaded in the background.</string>
+    <string name="settings_image_cache_summary_on">Images will be downloaded in the background.</string>
+    <string name="settings_image_cache_title">Download Images in the Background</string>
+</resources>

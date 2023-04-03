@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/iv_news_item_icon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        tools:src="#FF0000FF"
+        android:contentDescription="@string/news_item_image_content_description" />
+    <ProgressBar
+        android:id="@+id/pb_news_item_icon"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="bottom"
+        android:paddingLeft="8dp"
+        android:paddingStart="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginStart="50dp"
+        android:background="#AAFFFFFF"
+        android:padding="8dp"
+        tools:ignore="RtlHardcoded,RtlSymmetry">
+        <TextView
+            android:id="@+id/tv_news_item_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="22sp"
+            tools:text="Title"
+            />
+        <TextView
+            android:id="@+id/tv_news_item_author"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            tools:text="Author"
+            />
+        <TextView
+            android:id="@+id/tv_news_item_publication_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            tools:text="YYYY-MM-DD"
+            />
+    </LinearLayout>
+</FrameLayout>

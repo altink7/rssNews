@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <bool name="settings_image_display_default">true</bool>
+    <bool name="settings_image_cache_default">true</bool>
+</resources>
