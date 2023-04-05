@@ -9,7 +9,7 @@ To install this project, you should first clone the repository from Github:
 
 
 ```
-git clone https://github.com/altink7/rssNews
+git clone https://github.com/altink7/rssNews.git
 ```
 Then, you can open the project in your preferred IDE, such as Android Studio, and run it on an emulator or a physical device.
 Usage
