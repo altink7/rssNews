@@ -7,6 +7,7 @@ The purpose of this project is to download and parse news articles from a given 
 
 To install this project, you should first clone the repository from Github:
 
+
 ```
 git clone https://github.com/altink7/rssNews
 ```
