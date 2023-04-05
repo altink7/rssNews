@@ -7,10 +7,9 @@ The purpose of this project is to download and parse news articles from a given 
 
 To install this project, you should first clone the repository from Github:
 
-bash
-
-git clone https://github.com/altinkelmendi/kotlin-news-downloader.git
-
+```
+git clone https://github.com/altink7/rssNews
+```
 Then, you can open the project in your preferred IDE, such as Android Studio, and run it on an emulator or a physical device.
 Usage
 
@@ -34,7 +33,4 @@ Coroutines: A concurrency design pattern that simplifies code by reducing the nu
 This project is licensed under the MIT License - see the LICENSE.md file for details.
 # Contact
 
-If you have any questions or suggestions, you can contact the author of this project:
-
-    Name: Altin Kelmendi
-    Email: team@altin-it-solutions.com
+team@altin-it-solutions.com
