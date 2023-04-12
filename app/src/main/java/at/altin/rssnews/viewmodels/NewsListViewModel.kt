@@ -2,14 +2,13 @@ package at.altin.rssnews.viewmodels
 import android.app.Application
 import androidx.lifecycle.*
 import androidx.preference.PreferenceManager
-import androidx.work.Constraints
-import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
+import androidx.work.*
 import at.altin.rssnews.R
 import at.altin.rssnews.repository.NewsListRepository
 import at.altin.rssnews.worker.DownloadWorker
 import kotlinx.coroutines.launch
+import java.util.UUID
+import java.util.concurrent.TimeUnit
 
 class NewsListViewModel(
     val workManager: WorkManager,
@@ -29,7 +28,8 @@ class NewsListViewModel(
         get() = _busy
 
     private fun downloadNewsItems(newsFeedUrl: String, deleteOldItems: Boolean) {
-        scheduleBackgroundWork()
+        scheduleBackgroundWork(newsFeedUrl, deleteOldItems)
+
         _error.value = false
         _busy.value = true
         viewModelScope.launch {
@@ -42,16 +42,23 @@ class NewsListViewModel(
         }
     }
 
-    private fun scheduleBackgroundWork() {
-        val workRequest = OneTimeWorkRequestBuilder<DownloadWorker>()
+    private fun scheduleBackgroundWork(newsFeedUrl: String, deleteOldItems: Boolean) {
+        val workRequest = PeriodicWorkRequestBuilder<DownloadWorker>(15L, TimeUnit.MINUTES)
             .setConstraints(Constraints(
                 requiredNetworkType = NetworkType.CONNECTED,
                 requiresBatteryNotLow = true,
 
             ))
+            .setInputData(
+                workDataOf(
+                    "url" to newsFeedUrl,
+                    "deleteOldItems" to deleteOldItems
+                )
+
+            )
             .build()
 
-        workManager.enqueue(workRequest)
+        workManager.enqueueUniquePeriodicWork("PERIODIC_WORKER", ExistingPeriodicWorkPolicy.UPDATE, workRequest)
     }
 
     private fun getUrl(): String {
