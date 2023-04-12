@@ -49,6 +49,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         val layoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = layoutManager
         adapter = ListAdapter(
+            workManager = WorkManager.getInstance(applicationContext),
             showImages = getImageDisplay(),
             cacheImages = getCacheImages()
         )
