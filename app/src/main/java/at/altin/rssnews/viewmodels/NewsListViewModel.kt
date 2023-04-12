@@ -15,6 +15,7 @@ class NewsListViewModel(
     application: Application,
     val newsListRepository: NewsListRepository)
     : AndroidViewModel(application) {
+
     private val _error = MutableLiveData(false)
     private val _busy = MutableLiveData(true)
     val newsItems = newsListRepository.newsItems
@@ -54,11 +55,14 @@ class NewsListViewModel(
                     "url" to newsFeedUrl,
                     "deleteOldItems" to deleteOldItems
                 )
-
             )
             .build()
 
-        workManager.enqueueUniquePeriodicWork("PERIODIC_WORKER", ExistingPeriodicWorkPolicy.UPDATE, workRequest)
+        workManager.enqueueUniquePeriodicWork(
+            "PERIODIC_WORKER",
+            ExistingPeriodicWorkPolicy.UPDATE,
+            workRequest
+        )
     }
 
     private fun getUrl(): String {

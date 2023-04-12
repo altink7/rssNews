@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.WorkManager
 import at.altin.rssnews.R
 import at.altin.rssnews.data.NewsItem
 import at.altin.rssnews.repository.download.ImageDownloader
@@ -15,7 +16,12 @@ import java.net.MalformedURLException
 import java.net.URL
 import java.text.DateFormat
 
-class ListAdapter(items: List<NewsItem> = listOf(), var showImages : Boolean = false) : RecyclerView.Adapter<ListAdapter.ItemViewHolder>() {
+class ListAdapter(
+    items: List<NewsItem> = listOf(),
+    var showImages : Boolean = false,
+    var cacheImages : Boolean = false,
+    val workManager: WorkManager,
+    ) : RecyclerView.Adapter<ListAdapter.ItemViewHolder>() {
     companion object {
         private const val TYPE_TOP = 0
         private const val TYPE_OTHERS = 1

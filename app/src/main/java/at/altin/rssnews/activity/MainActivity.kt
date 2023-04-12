@@ -48,7 +48,10 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         val recyclerView = findViewById<RecyclerView>(R.id.rv_list)
         val layoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = layoutManager
-        adapter = ListAdapter(showImages = getImageDisplay())
+        adapter = ListAdapter(
+            showImages = getImageDisplay(),
+            cacheImages = getCacheImages()
+        )
         recyclerView.adapter = adapter
         adapter?.itemClickListener = {
             val intent = Intent(this, DetailsActivity::class.java)
@@ -93,6 +96,14 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         )
     }
 
+    private fun getCacheImages(): Boolean {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        return sharedPreferences.getBoolean(
+            getString(R.string.settings_image_cache_key),
+            resources.getBoolean(R.bool.settings_image_cache_default)
+        )
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
         return true
@@ -118,6 +129,8 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             viewModel.reload(true)
         } else if (key == getString(R.string.settings_image_display_key)) {
             adapter?.reload(getImageDisplay())
+        } else if (key == getString(R.string.settings_image_cache_key)) {
+            adapter?.reload(getCacheImages())
         }
     }
 }
