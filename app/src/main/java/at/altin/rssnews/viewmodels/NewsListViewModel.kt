@@ -2,11 +2,20 @@ package at.altin.rssnews.viewmodels
 import android.app.Application
 import androidx.lifecycle.*
 import androidx.preference.PreferenceManager
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import at.altin.rssnews.R
 import at.altin.rssnews.repository.NewsListRepository
+import at.altin.rssnews.worker.DownloadWorker
 import kotlinx.coroutines.launch
 
-class NewsListViewModel(application: Application, val newsListRepository: NewsListRepository) : AndroidViewModel(application) {
+class NewsListViewModel(
+    val workManager: WorkManager,
+    application: Application,
+    val newsListRepository: NewsListRepository)
+    : AndroidViewModel(application) {
     private val _error = MutableLiveData(false)
     private val _busy = MutableLiveData(true)
     val newsItems = newsListRepository.newsItems
@@ -20,6 +29,7 @@ class NewsListViewModel(application: Application, val newsListRepository: NewsLi
         get() = _busy
 
     private fun downloadNewsItems(newsFeedUrl: String, deleteOldItems: Boolean) {
+        scheduleBackgroundWork()
         _error.value = false
         _busy.value = true
         viewModelScope.launch {
@@ -31,6 +41,19 @@ class NewsListViewModel(application: Application, val newsListRepository: NewsLi
             }
         }
     }
+
+    private fun scheduleBackgroundWork() {
+        val workRequest = OneTimeWorkRequestBuilder<DownloadWorker>()
+            .setConstraints(Constraints(
+                requiredNetworkType = NetworkType.CONNECTED,
+                requiresBatteryNotLow = true,
+
+            ))
+            .build()
+
+        workManager.enqueue(workRequest)
+    }
+
     private fun getUrl(): String {
         val context = getApplication<Application>().applicationContext
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -45,12 +68,12 @@ class NewsListViewModel(application: Application, val newsListRepository: NewsLi
     }
 }
 
-class NewsItemViewModelFactory(private val newsListRepository: NewsListRepository, private val application: Application) :
+class NewsItemViewModelFactory(private val newsListRepository: NewsListRepository, private val application: Application, private val workManager: WorkManager) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(NewsListViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return NewsListViewModel(application,newsListRepository) as T
+            return NewsListViewModel(workManager, application,newsListRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

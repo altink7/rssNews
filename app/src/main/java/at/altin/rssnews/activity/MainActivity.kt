@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.WorkManager
 import at.altin.rssnews.R
 import at.altin.rssnews.adapter.ListAdapter
 import at.altin.rssnews.application.NewsListApplication
@@ -28,7 +29,10 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     private val viewModel: NewsListViewModel by viewModels(
         factoryProducer = {
             val application = applicationContext as NewsListApplication
-            NewsItemViewModelFactory(newsListRepository(application), application)
+            NewsItemViewModelFactory(
+                newsListRepository(application),
+                application,
+                WorkManager.getInstance(applicationContext))
         }
     )
     private fun newsListRepository(application: NewsListApplication): NewsListRepository {
