@@ -20,7 +20,7 @@ class NewsListViewModel(
     private val _busy = MutableLiveData(true)
     val newsItems = newsListRepository.newsItems
     init {
-        reload(true)
+        reload(false)
     }
 
     val error : LiveData<Boolean>
@@ -30,7 +30,7 @@ class NewsListViewModel(
 
     private fun downloadNewsItems(newsFeedUrl: String, deleteOldItems: Boolean) {
         viewModelScope.launch {
-            val loadVal = newsListRepository.loadNewsItems(newsFeedUrl, deleteOldItems,false)
+            val loadVal = newsListRepository.loadNewsItems(newsFeedUrl, deleteOldItems,false,5)
             scheduleBackgroundWork(newsFeedUrl, deleteOldItems);
             if(loadVal){
                 _error.value = true

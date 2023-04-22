@@ -2,7 +2,9 @@ package at.altin.rssnews.worker
 
 import android.Manifest
 import android.app.Notification
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.app.ActivityCompat
@@ -11,9 +13,12 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import at.altin.rssnews.R
+import at.altin.rssnews.activity.CHANNEL_ID
+import at.altin.rssnews.activity.MainActivity
 import at.altin.rssnews.data.AppRoomDatabase
 import at.altin.rssnews.repository.NewsListRepository
 import at.altin.rssnews.repository.download.NewsDownloader
+import java.util.UUID
 
 
 const val NEWS_NOTIFICATION = "News Notification"
@@ -33,10 +38,8 @@ class DownloadWorker(appContext: Context, params: WorkerParameters) :
         val url = inputData.getString("url")?:""
         val deleteOldItems = inputData.getBoolean("deleteOldItems", true)
 
-        //load NewsItems and set parameter loadVal
-        newsListRepository.loadNewsItems(url, deleteOldItems, true)
-
-
+        //load NewsItems and set parameter loadVal, and delete Interval in days( which defines how old the newsItems can be)
+        newsListRepository.loadNewsItems(url, deleteOldItems, true,5)
 
         val notificationCompat = NotificationManagerCompat.from(applicationContext)
 
@@ -63,6 +66,45 @@ class DownloadWorker(appContext: Context, params: WorkerParameters) :
             .build()
 
         notificationCompat.notify( notificationId++, notification)
+
+        //Notification for the user
+
+        // "the inner explicit intent"
+        val detailIntent = Intent(applicationContext, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+
+        // add data to it
+        detailIntent.putExtra("at.altin.rssnews.newsid", "${UUID.randomUUID()}")
+
+        val pendingIntent: PendingIntent =
+            PendingIntent.getActivity(
+                applicationContext,
+                0,
+                detailIntent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT // this second flag was missing during the lesson
+            )
+
+
+        val notificationNews = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
+            .setSmallIcon(androidx.loader.R.drawable.notification_bg_normal_pressed)
+            .setContentTitle("Downloading news")
+            .setContentText("Fresh cards are being downloaded")
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+            .build()
+
+        notificationCompat
+            .notify(notificationId++, notificationNews)
+
+        //delete orphaned images
+        val cacheDir = applicationContext.cacheDir
+        val files = cacheDir.listFiles()
+        for (file in files!!) {
+            if (file.name.endsWith(".jpg") || file.name.endsWith(".png")) {
+                file.delete()
+            }
+        }
 
         return Result.success()
     }

@@ -28,6 +28,8 @@ import at.altin.rssnews.viewmodels.NewsListViewModel
 import at.altin.rssnews.worker.NEWS_NOTIFICATION
 
 
+public const val CHANNEL_ID = "News"
+
 class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
     private var adapter : ListAdapter? = null
 
@@ -121,7 +123,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_reload -> {
-                viewModel.reload(true)
+                viewModel.reload(false)
                 true
             }
             R.id.action_settings -> {
@@ -141,7 +143,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             val name = NEWS_NOTIFICATION
             val descriptionText = "News Notification Description"
             val importance = NotificationManager.IMPORTANCE_HIGH
-            val channel = NotificationChannel("News", name, importance).apply {
+            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
                 description = descriptionText
             }
             //Add the channel
