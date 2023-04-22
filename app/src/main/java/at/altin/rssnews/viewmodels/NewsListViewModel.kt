@@ -29,12 +29,9 @@ class NewsListViewModel(
         get() = _busy
 
     private fun downloadNewsItems(newsFeedUrl: String, deleteOldItems: Boolean) {
-        scheduleBackgroundWork(newsFeedUrl, deleteOldItems)
-
-        _error.value = false
-        _busy.value = true
         viewModelScope.launch {
-            val loadVal = newsListRepository.loadNewsItems(newsFeedUrl, deleteOldItems)
+            val loadVal = newsListRepository.loadNewsItems(newsFeedUrl, deleteOldItems,false)
+            scheduleBackgroundWork(newsFeedUrl, deleteOldItems);
             if(loadVal){
                 _error.value = true
             }else{
@@ -44,7 +41,7 @@ class NewsListViewModel(
     }
 
     private fun scheduleBackgroundWork(newsFeedUrl: String, deleteOldItems: Boolean) {
-        val workRequest = PeriodicWorkRequestBuilder<DownloadWorker>(15L, TimeUnit.MINUTES)
+        val workRequest = PeriodicWorkRequestBuilder<DownloadWorker>(30L, TimeUnit.MINUTES)
             .setConstraints(Constraints(
                 requiredNetworkType = NetworkType.CONNECTED,
                 requiresBatteryNotLow = true,

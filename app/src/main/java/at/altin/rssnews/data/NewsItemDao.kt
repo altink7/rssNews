@@ -2,6 +2,7 @@ package at.altin.rssnews.data
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import java.util.Date
 
 @Dao
 interface NewsItemDao {
@@ -19,4 +20,8 @@ interface NewsItemDao {
 
     @Query("DELETE FROM news_item")
     suspend fun deleteAllNewsItems()
+
+    //delete all news items if publication date is older than five days
+    @Query("DELETE FROM news_item WHERE publicationDate < :dateFromArg")
+    fun deleteOldNewsItems(dateFromArg: Date = Date(System.currentTimeMillis() - 5 * 24 * 60 * 60 * 1000))
 }

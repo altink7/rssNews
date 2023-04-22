@@ -1,7 +1,10 @@
 package at.altin.rssnews.activity
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Intent
 import android.content.SharedPreferences
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -9,6 +12,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationManagerCompat
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,6 +25,7 @@ import at.altin.rssnews.repository.download.NewsDownloader
 import at.altin.rssnews.settings.SettingsActivity
 import at.altin.rssnews.viewmodels.NewsItemViewModelFactory
 import at.altin.rssnews.viewmodels.NewsListViewModel
+import at.altin.rssnews.worker.NEWS_NOTIFICATION
 
 
 class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
@@ -75,6 +80,9 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
         val sharedPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+
+        // Create notification channel
+        createNotificationChannel()
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
@@ -122,6 +130,24 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    fun createNotificationChannel() {
+        //Make a Channel if necessary
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            //Create the NotificationChannel, but only on API 26+ because
+            //the NotificationChannel class is new and not in the support library
+            val name = NEWS_NOTIFICATION
+            val descriptionText = "News Notification Description"
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel("News", name, importance).apply {
+                description = descriptionText
+            }
+            //Add the channel
+            val notificationManager= NotificationManagerCompat.from(applicationContext)
+
+            notificationManager.createNotificationChannel(channel)
         }
     }
 

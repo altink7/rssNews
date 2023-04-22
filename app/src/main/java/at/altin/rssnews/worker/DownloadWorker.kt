@@ -10,10 +10,13 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import at.altin.rssnews.R
 import at.altin.rssnews.data.AppRoomDatabase
 import at.altin.rssnews.repository.NewsListRepository
 import at.altin.rssnews.repository.download.NewsDownloader
 
+
+const val NEWS_NOTIFICATION = "News Notification"
 
 class DownloadWorker(appContext: Context, params: WorkerParameters) :
     CoroutineWorker(appContext, params) {
@@ -25,19 +28,15 @@ class DownloadWorker(appContext: Context, params: WorkerParameters) :
         AppRoomDatabase.getDatabase(appContext).newsItemDao(),
         NewsDownloader()
     )
-
     override suspend fun doWork(): Result {
 
         val url = inputData.getString("url")?:""
         val deleteOldItems = inputData.getBoolean("deleteOldItems", true)
 
-        //load NewsItems
-        newsListRepository.loadNewsItems(url, deleteOldItems)
+        //load NewsItems and set parameter loadVal
+        newsListRepository.loadNewsItems(url, deleteOldItems, true)
 
-        Log.e(logTag, "news items loaded")
 
-        val notification = NotificationCompat.Builder(applicationContext, "CHANNEL_ID")
-            .build()
 
         val notificationCompat = NotificationManagerCompat.from(applicationContext)
 
@@ -55,6 +54,13 @@ class DownloadWorker(appContext: Context, params: WorkerParameters) :
             // for ActivityCompat#requestPermissions for more details.
             return Result.success()
         }
+
+        val notification = NotificationCompat.Builder(applicationContext, NEWS_NOTIFICATION)
+            .setSmallIcon(R.drawable.ic_launcher_background)
+            .setContentTitle("News")
+            .setContentText("News loaded")
+            .setAutoCancel(true)
+            .build()
 
         notificationCompat.notify( notificationId++, notification)
 
