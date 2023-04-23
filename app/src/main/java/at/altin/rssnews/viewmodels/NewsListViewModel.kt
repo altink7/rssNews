@@ -7,13 +7,14 @@ import at.altin.rssnews.R
 import at.altin.rssnews.repository.NewsListRepository
 import at.altin.rssnews.worker.DownloadWorker
 import kotlinx.coroutines.launch
-import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 class NewsListViewModel(
     val workManager: WorkManager,
     application: Application,
-    val newsListRepository: NewsListRepository)
+    val newsListRepository: NewsListRepository,
+    val cacheImages: Boolean
+)
     : AndroidViewModel(application) {
 
     private val _error = MutableLiveData(false)
@@ -30,7 +31,7 @@ class NewsListViewModel(
 
     private fun downloadNewsItems(newsFeedUrl: String, deleteOldItems: Boolean) {
         viewModelScope.launch {
-            val loadVal = newsListRepository.loadNewsItems(newsFeedUrl, deleteOldItems,false,5)
+            val loadVal = newsListRepository.loadNewsItems(newsFeedUrl, deleteOldItems,false, cacheImages, 5)
             scheduleBackgroundWork(newsFeedUrl, deleteOldItems);
             if(loadVal){
                 _error.value = true
@@ -50,7 +51,8 @@ class NewsListViewModel(
             .setInputData(
                 workDataOf(
                     "url" to newsFeedUrl,
-                    "deleteOldItems" to deleteOldItems
+                    "deleteOldItems" to deleteOldItems,
+                    "cacheImages" to cacheImages
                 )
             )
             .build()
@@ -76,12 +78,17 @@ class NewsListViewModel(
     }
 }
 
-class NewsItemViewModelFactory(private val newsListRepository: NewsListRepository, private val application: Application, private val workManager: WorkManager) :
+class NewsItemViewModelFactory(
+    private val newsListRepository: NewsListRepository,
+    private val application: Application,
+    private val workManager: WorkManager,
+    private val cacheImages: Boolean
+) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(NewsListViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return NewsListViewModel(workManager, application,newsListRepository) as T
+            return NewsListViewModel(workManager, application,newsListRepository, cacheImages) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

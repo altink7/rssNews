@@ -20,7 +20,9 @@ interface NewsItemDao {
     @Query("DELETE FROM news_item")
     suspend fun deleteAllNewsItems()
 
-    //delete all news items if publication date is older than five days
     @Delete
     fun deleteOldNewsItems(publicationDate: MutableList<NewsItem>)
+
+    @Query("SELECT COUNT(*) FROM news_item")
+    fun getNewsItemCount(): Int
 }

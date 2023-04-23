@@ -39,13 +39,15 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             NewsItemViewModelFactory(
                 newsListRepository(application),
                 application,
-                WorkManager.getInstance(applicationContext))
+                WorkManager.getInstance(applicationContext),
+                cacheImages = getCacheImages()
+            )
         }
     )
     private fun newsListRepository(application: NewsListApplication): NewsListRepository {
         val dao = application.appRoomDatabase.newsItemDao()
         val downloader = NewsDownloader()
-        return NewsListRepository(dao, downloader)
+        return NewsListRepository(dao, downloader, workManager = WorkManager.getInstance(applicationContext))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,9 +58,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         val layoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = layoutManager
         adapter = ListAdapter(
-            workManager = WorkManager.getInstance(applicationContext),
-            showImages = getImageDisplay(),
-            cacheImages = getCacheImages()
+            showImages = getImageDisplay()
         )
         recyclerView.adapter = adapter
         adapter?.itemClickListener = {

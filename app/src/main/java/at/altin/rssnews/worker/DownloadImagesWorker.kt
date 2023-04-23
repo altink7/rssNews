@@ -11,10 +11,10 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
+import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import at.altin.rssnews.activity.CHANNEL_ID
 import at.altin.rssnews.activity.DetailsActivity
-import at.altin.rssnews.activity.MainActivity
 import at.altin.rssnews.data.AppRoomDatabase
 import at.altin.rssnews.repository.NewsListRepository
 import at.altin.rssnews.repository.download.NewsDownloader
@@ -23,7 +23,6 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.UUID
 
 class DownloadImagesWorker(appContext: Context, params: WorkerParameters) :
     CoroutineWorker(appContext, params) {
@@ -33,7 +32,8 @@ class DownloadImagesWorker(appContext: Context, params: WorkerParameters) :
 
     private val newsListRepository = NewsListRepository(
         AppRoomDatabase.getDatabase(appContext).newsItemDao(),
-        NewsDownloader()
+        NewsDownloader(),
+        WorkManager.getInstance(appContext)
     )
 
     override suspend fun doWork(): Result {
@@ -52,27 +52,24 @@ class DownloadImagesWorker(appContext: Context, params: WorkerParameters) :
 
         try {
             val url = URL(imageUrl)
-            val connection = url.openConnection() as HttpURLConnection
-            connection.doInput = true
-            connection.connect()
-            val input = connection.inputStream
-            val output = FileOutputStream(file)
+                val connection = url.openConnection() as HttpURLConnection
+                connection.doInput = true
+                connection.connect()
+                val input = connection.inputStream
+                val output = FileOutputStream(file)
 
-            val buffer = ByteArray(1024)
-            var byteCount: Int
-            while (input.read(buffer).also { byteCount = it } != -1) {
-                output.write(buffer, 0, byteCount)
-            }
-            output.flush()
-            output.close()
-            input.close()
+                val buffer = ByteArray(1024)
+                var byteCount: Int
+                while (input.read(buffer).also { byteCount = it } != -1) {
+                    output.write(buffer, 0, byteCount)
+                }
+                output.flush()
+                output.close()
+                input.close()
         } catch (e: IOException) {
             e.printStackTrace()
             return Result.failure()
         }
-
-        if(newsListRepository.isNewNewsItem(title)){
-
             val detailIntent = Intent(applicationContext, DetailsActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             }
@@ -100,7 +97,6 @@ class DownloadImagesWorker(appContext: Context, params: WorkerParameters) :
             val notification = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
                 .setContentTitle("New Item Added")
                 .setContentText(title)
-                    //small icon should be the picture of the news
                 .setSmallIcon(android.R.drawable.ic_dialog_info)
                 .setStyle(NotificationCompat.BigPictureStyle().bigPicture(bitmap))
                 .setContentIntent(pendingIntent)
@@ -121,8 +117,25 @@ class DownloadImagesWorker(appContext: Context, params: WorkerParameters) :
             }
                 notificationCompat
                     .notify(notificationId++, notification)
-        }
 
+        //Delete all orphaned images from the cache (images references only by
+        //previously deleted news items).
+        val newsItems = newsListRepository.getAllNewsItems()
+        val cacheFiles = cacheDir.listFiles()
+        for (cacheFile in cacheFiles!!) {
+            var found = true
+            for (newsItem in newsItems) {
+                if (cacheFile.name.contains(newsItem.title.toString())) {
+                    found = true
+                    break
+                }else{
+                    found = false
+                }
+            }
+            if (!found) {
+                cacheFile.delete()
+            }
+        }
 
         return Result.success()
 

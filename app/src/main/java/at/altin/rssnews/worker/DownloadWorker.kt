@@ -9,6 +9,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
+import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import at.altin.rssnews.R
 import at.altin.rssnews.activity.CHANNEL_ID
@@ -29,15 +30,17 @@ class DownloadWorker(appContext: Context, params: WorkerParameters) :
 
     private val newsListRepository = NewsListRepository(
         AppRoomDatabase.getDatabase(appContext).newsItemDao(),
-        NewsDownloader()
+        NewsDownloader(),
+        WorkManager.getInstance(appContext)
     )
     override suspend fun doWork(): Result {
 
         val url = inputData.getString("url")?:""
         val deleteOldItems = inputData.getBoolean("deleteOldItems", true)
+        val cacheImages = inputData.getBoolean("cacheImages", false)
 
         //load NewsItems and set parameter loadVal, and delete Interval in days( which defines how old the newsItems can be)
-        newsListRepository.loadNewsItems(url, deleteOldItems, true,5)
+        newsListRepository.loadNewsItems(url, deleteOldItems, true,cacheImages,5)
 
         val notificationCompat = NotificationManagerCompat.from(applicationContext)
 
