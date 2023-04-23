@@ -15,6 +15,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import at.altin.rssnews.R
 import at.altin.rssnews.data.NewsItem
+import at.altin.rssnews.data.NewsItemDao
 import at.altin.rssnews.repository.download.ImageDownloader
 import java.net.MalformedURLException
 import java.net.URL
@@ -29,7 +30,20 @@ class DetailsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
-        val item = intent?.extras?.getSerializable(ITEM_KEY) as? NewsItem
+        var item = intent?.extras?.getSerializable(ITEM_KEY) as? NewsItem
+        if(item == null) {
+            val title = intent?.extras?.getString("title")?: ""
+            val url = intent?.extras?.getString("url")
+            val description = intent?.extras?.getString("description")
+            val author = intent?.extras?.getString("author")
+            val link = intent?.extras?.getString("link")
+
+            if(title == "" || url == null || description == null || author == null) {
+                Log.e(LOG_TAG, "Missing data in intent")
+            }else {
+                item = NewsItem("info",title, link, description, url, author)
+            }
+        }
         if (item != null) {
             findViewById<TextView>(R.id.tv_news_item_title).text = item.title
 

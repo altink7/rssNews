@@ -50,4 +50,9 @@ class NewsListRepository(
                 false
             }
         }
+
+    fun isNewNewsItem(title: String): Boolean {
+        val newsItemFromDb = newsItemDao.findNewsItemsByTitle(title)
+        return newsItemFromDb.value.isNullOrEmpty()
+    }
 }

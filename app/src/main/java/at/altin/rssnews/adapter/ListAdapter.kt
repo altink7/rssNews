@@ -8,10 +8,17 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import androidx.work.WorkRequest
+import androidx.work.workDataOf
 import at.altin.rssnews.R
 import at.altin.rssnews.data.NewsItem
+import at.altin.rssnews.data.NewsItemDao
 import at.altin.rssnews.repository.download.ImageDownloader
+import at.altin.rssnews.worker.DownloadImagesWorker
 import java.net.MalformedURLException
 import java.net.URL
 import java.text.DateFormat
@@ -68,6 +75,9 @@ class ListAdapter(
                     itemImageView.tag = imageUrl
 
                     if (imageUrl != null) {
+                        if (cacheImages) {
+                            scheduleBackgroundWork(items[index])
+                        }
                         ImageDownloader.downloadImage(imageUrl) { url, bitmap ->
                             itemImageView.post {
                                 if (bitmap != null && itemImageView.tag == url) {
@@ -104,11 +114,37 @@ class ListAdapter(
         return items.size
     }
 
-    fun reload(showImages: Boolean) {
+    fun reloadShowImages(showImages: Boolean) {
         this.showImages = showImages
         notifyDataSetChanged()
     }
 
+    fun reloadCacheImages(cacheImages: Boolean) {
+        this.cacheImages = cacheImages
+        notifyDataSetChanged()
+    }
+
+    private fun scheduleBackgroundWork(newsItem: NewsItem) {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val downloadWorkRequest: WorkRequest = OneTimeWorkRequestBuilder<DownloadImagesWorker>()
+            .setConstraints(constraints)
+            .setInputData(
+                workDataOf(
+                    "url" to newsItem.imageUrl,
+                    "title" to newsItem.title,
+                    "publicationDate" to newsItem.publicationDate.time,
+                    "link" to newsItem.link,
+                    "author" to newsItem.author,
+                    "description" to newsItem.description
+                )
+            )
+            .build()
+
+        workManager.enqueue(downloadWorkRequest)
+    }
     override fun getItemViewType(position: Int): Int {
         return if (position == 0) TYPE_TOP else TYPE_OTHERS
     }

@@ -1,12 +1,10 @@
 package at.altin.rssnews.worker
 
 import android.Manifest
-import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -57,16 +55,6 @@ class DownloadWorker(appContext: Context, params: WorkerParameters) :
             // for ActivityCompat#requestPermissions for more details.
             return Result.success()
         }
-
-        val notification = NotificationCompat.Builder(applicationContext, NEWS_NOTIFICATION)
-            .setSmallIcon(R.drawable.ic_launcher_background)
-            .setContentTitle("News")
-            .setContentText("News loaded")
-            .setAutoCancel(true)
-            .build()
-
-        notificationCompat.notify( notificationId++, notification)
-
         //Notification for the user
 
         // "the inner explicit intent"
@@ -85,26 +73,16 @@ class DownloadWorker(appContext: Context, params: WorkerParameters) :
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT // this second flag was missing during the lesson
             )
 
-
         val notificationNews = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
             .setSmallIcon(androidx.loader.R.drawable.notification_bg_normal_pressed)
             .setContentTitle("Downloading news")
-            .setContentText("Fresh cards are being downloaded")
+            .setContentText("Fresh News are being downloaded")
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
             .build()
 
         notificationCompat
             .notify(notificationId++, notificationNews)
-
-        //delete orphaned images
-        val cacheDir = applicationContext.cacheDir
-        val files = cacheDir.listFiles()
-        for (file in files!!) {
-            if (file.name.endsWith(".jpg") || file.name.endsWith(".png")) {
-                file.delete()
-            }
-        }
 
         return Result.success()
     }

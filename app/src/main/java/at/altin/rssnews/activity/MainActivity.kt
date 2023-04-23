@@ -157,9 +157,9 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         if (key == getString(R.string.settings_news_url_key)) {
             viewModel.reload(true)
         } else if (key == getString(R.string.settings_image_display_key)) {
-            adapter?.reload(getImageDisplay())
+            adapter?.reloadShowImages(getImageDisplay())
         } else if (key == getString(R.string.settings_image_cache_key)) {
-            adapter?.reload(getCacheImages())
+            adapter?.reloadCacheImages(getCacheImages())
         }
     }
 }
