@@ -88,7 +88,7 @@ class DetailsActivity : AppCompatActivity() {
 
                     ImageDownloader.downloadImage(imageUrl) { url, bitmap ->
                         imageView.post {
-                            if (bitmap != null && imageView.tag == url) {
+                            if (bitmap != null && imageView.tag.equals(url)) {
                                 imageView.setImageBitmap(bitmap)
                                 imageView.visibility = View.VISIBLE
                             }

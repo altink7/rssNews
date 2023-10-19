@@ -18,7 +18,7 @@ import java.text.DateFormat
 class ListAdapter(
     items: List<NewsItem> = listOf(),
     var showImages : Boolean = false,
-    var cacheImages : Boolean = false
+    private var cacheImages : Boolean = false
     ) : RecyclerView.Adapter<ListAdapter.ItemViewHolder>() {
     companion object {
         private const val TYPE_TOP = 0
@@ -28,7 +28,7 @@ class ListAdapter(
     var items = items
         set(value) {
             field = value
-            notifyDataSetChanged()
+            notifyItemChanged(items.size - 1)
         }
     var itemClickListener : ((NewsItem)->Unit)? = null
 
@@ -68,7 +68,7 @@ class ListAdapter(
                     if (imageUrl != null) {
                         ImageDownloader.downloadImage(imageUrl) { url, bitmap ->
                             itemImageView.post {
-                                if (bitmap != null && itemImageView.tag == url) {
+                                if (bitmap != null && itemImageView.tag.equals(url)) {
                                     itemImageView.setImageBitmap(bitmap)
                                     itemImageView.visibility = View.VISIBLE
                                 }
@@ -104,12 +104,12 @@ class ListAdapter(
 
     fun reloadShowImages(showImages: Boolean) {
         this.showImages = showImages
-        notifyDataSetChanged()
+        notifyItemChanged(0)
     }
 
     fun reloadCacheImages(cacheImages: Boolean) {
         this.cacheImages = cacheImages
-        notifyDataSetChanged()
+        notifyItemChanged(0)
     }
     override fun getItemViewType(position: Int): Int {
         return if (position == 0) TYPE_TOP else TYPE_OTHERS
