@@ -28,7 +28,7 @@ class NewsListRepository(
 
         if (!isWorker) {
             //just return val if not called from worker
-            return false;
+            return false
         }
             //if called from Worker do all the Background Work
             val value = newsDownloader.load(newsFeedUrl)

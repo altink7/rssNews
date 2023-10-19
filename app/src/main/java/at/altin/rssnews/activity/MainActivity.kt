@@ -28,7 +28,7 @@ import at.altin.rssnews.viewmodels.NewsListViewModel
 import at.altin.rssnews.worker.NEWS_NOTIFICATION
 
 
-public const val CHANNEL_ID = "News"
+const val CHANNEL_ID = "News"
 
 class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
     private var adapter : ListAdapter? = null
@@ -135,7 +135,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         }
     }
 
-    fun createNotificationChannel() {
+    private fun createNotificationChannel() {
         //Make a Channel if necessary
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             //Create the NotificationChannel, but only on API 26+ because
@@ -153,13 +153,17 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         }
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String) {
-        if (key == getString(R.string.settings_news_url_key)) {
-            viewModel.reload(true)
-        } else if (key == getString(R.string.settings_image_display_key)) {
-            adapter?.reloadShowImages(getImageDisplay())
-        } else if (key == getString(R.string.settings_image_cache_key)) {
-            adapter?.reloadCacheImages(getCacheImages())
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        when (key) {
+            getString(R.string.settings_news_url_key) -> {
+                viewModel.reload(true)
+            }
+            getString(R.string.settings_image_display_key) -> {
+                adapter?.reloadShowImages(getImageDisplay())
+            }
+            getString(R.string.settings_image_cache_key) -> {
+                adapter?.reloadCacheImages(getCacheImages())
+            }
         }
     }
 }

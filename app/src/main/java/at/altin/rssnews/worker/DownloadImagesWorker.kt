@@ -18,17 +18,20 @@ import at.altin.rssnews.activity.DetailsActivity
 import at.altin.rssnews.data.AppRoomDatabase
 import at.altin.rssnews.repository.NewsListRepository
 import at.altin.rssnews.repository.download.NewsDownloader
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 
+@Suppress("unused")
 class DownloadImagesWorker(appContext: Context, params: WorkerParameters) :
     CoroutineWorker(appContext, params) {
 
     private val logTag = "DownloadWorker"
-    var notificationId = 1;
+    private var notificationId = 1
 
     private val newsListRepository = NewsListRepository(
         AppRoomDatabase.getDatabase(appContext).newsItemDao(),
@@ -51,7 +54,8 @@ class DownloadImagesWorker(appContext: Context, params: WorkerParameters) :
         val notificationCompat = NotificationManagerCompat.from(applicationContext)
 
         try {
-            val url = URL(imageUrl)
+            withContext(Dispatchers.IO) {
+                val url = URL(imageUrl)
                 val connection = url.openConnection() as HttpURLConnection
                 connection.doInput = true
                 connection.connect()
@@ -66,6 +70,7 @@ class DownloadImagesWorker(appContext: Context, params: WorkerParameters) :
                 output.flush()
                 output.close()
                 input.close()
+            }
         } catch (e: IOException) {
             e.printStackTrace()
             return Result.failure()

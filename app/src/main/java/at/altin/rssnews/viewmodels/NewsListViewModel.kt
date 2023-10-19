@@ -10,10 +10,10 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 class NewsListViewModel(
-    val workManager: WorkManager,
+    private val workManager: WorkManager,
     application: Application,
-    val newsListRepository: NewsListRepository,
-    val cacheImages: Boolean
+    private val newsListRepository: NewsListRepository,
+    private val cacheImages: Boolean
 )
     : AndroidViewModel(application) {
 
@@ -32,7 +32,7 @@ class NewsListViewModel(
     private fun downloadNewsItems(newsFeedUrl: String, deleteOldItems: Boolean) {
         viewModelScope.launch {
             val loadVal = newsListRepository.loadNewsItems(newsFeedUrl, deleteOldItems,false, cacheImages, 5)
-            scheduleBackgroundWork(newsFeedUrl, deleteOldItems);
+            scheduleBackgroundWork(newsFeedUrl, deleteOldItems)
             if(loadVal){
                 _error.value = true
             }else{

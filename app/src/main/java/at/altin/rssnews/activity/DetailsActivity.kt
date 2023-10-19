@@ -15,7 +15,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import at.altin.rssnews.R
 import at.altin.rssnews.data.NewsItem
-import at.altin.rssnews.data.NewsItemDao
 import at.altin.rssnews.repository.download.ImageDownloader
 import java.net.MalformedURLException
 import java.net.URL
