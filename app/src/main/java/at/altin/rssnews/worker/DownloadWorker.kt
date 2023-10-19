@@ -11,13 +11,12 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import at.altin.rssnews.R
 import at.altin.rssnews.activity.CHANNEL_ID
 import at.altin.rssnews.activity.MainActivity
 import at.altin.rssnews.data.AppRoomDatabase
 import at.altin.rssnews.repository.NewsListRepository
 import at.altin.rssnews.repository.download.NewsDownloader
-import java.util.UUID
+import java.util.*
 
 
 const val NEWS_NOTIFICATION = "News Notification"
@@ -26,7 +25,7 @@ class DownloadWorker(appContext: Context, params: WorkerParameters) :
     CoroutineWorker(appContext, params) {
 
     private val logTag = "DownloadWorker"
-    private var notificationId = 1;
+    private var notificationId = 1
 
     private val newsListRepository = NewsListRepository(
         AppRoomDatabase.getDatabase(appContext).newsItemDao(),
