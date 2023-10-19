@@ -16,7 +16,7 @@ android {
     compileSdk 33
 
     defaultConfig {
-        applicationId "at.technikum_wien.polzert.at.altin.newsclassic"
+        applicationId "at.altin.newsclassic"
         minSdk 21
         targetSdk 33
         versionCode 1
@@ -38,7 +38,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    namespace 'at.technikum_wien.polzert.newsclassic'
+    namespace 'at.altin.newsclassic'
 
 }
 
