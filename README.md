@@ -34,4 +34,4 @@ Coroutines: A concurrency design pattern that simplifies code by reducing the nu
 This project is licensed under the MIT License - see the LICENSE.md file for details.
 # Contact
 
-office@altin.at
+office@altinkelmendi.at
